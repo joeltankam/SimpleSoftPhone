@@ -37,14 +37,14 @@ target/
 .project
 
 # NetBeans specific
-nbproject/private/
+nbproject/
 build/
 nbbuild/
 dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
-
+build.xml
 
 # OS
 .DS_Store
@@ -54,3 +54,4 @@ nb-configuration.xml
 release.properties
 pom.xml.releaseBackup
 pom.xml.tag
+

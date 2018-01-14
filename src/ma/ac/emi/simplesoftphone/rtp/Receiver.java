@@ -1,4 +1,4 @@
-package ma.ac.emi.jt4nk.rtp;
+package ma.ac.emi.simplesoftphone.rtp;
 
 import javax.media.*;
 import java.io.IOException;
@@ -8,7 +8,7 @@ public class Receiver {
     private MediaLocator mediaLocator;
     private Player player;
 
-    public Receiver(String locator) {
+    private Receiver(String locator) {
         this.locator = locator;
         this.mediaLocator = new MediaLocator(locator);
         try {
@@ -21,5 +21,9 @@ public class Receiver {
             e.printStackTrace();
         }
         player.start();
+    }
+
+    public static Receiver from(String locator){
+        return new Receiver(locator);
     }
 }

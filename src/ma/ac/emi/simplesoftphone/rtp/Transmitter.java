@@ -1,11 +1,10 @@
-package ma.ac.emi.jt4nk.rtp;
+package ma.ac.emi.simplesoftphone.rtp;
 
 import javax.media.*;
 import javax.media.format.AudioFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 public class Transmitter {
     private String locator;
@@ -13,7 +12,7 @@ public class Transmitter {
     private static final Format[] FORMATS = new Format[] {new AudioFormat(AudioFormat.ULAW_RTP)}; //Ulaw_RTP
     private static final ContentDescriptor CONTENT_DESCRIPTOR =new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
-    public Transmitter(String locator){
+    private Transmitter(String locator){
         this.locator = locator;
         // media source = microphone
         MediaLocator mediaLocator = new MediaLocator("javasound://0");
@@ -69,5 +68,9 @@ public class Transmitter {
         }
 
         System.out.println("Transmiting...");
+    }
+
+    public static Transmitter to(String locator){
+        return new Transmitter(locator);
     }
 }
