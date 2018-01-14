@@ -6,10 +6,19 @@ import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
 import java.io.IOException;
 
+/**
+ * Permet de transmettre un stream audio pour lire un stream audio à partir d'une uri
+ */
 public class Transmitter {
+    /**
+     * Uri à laquelle on transmet le stream audio
+     */
     private String locator;
-    //media formats needed to build RTP stream
-    private static final Format[] FORMATS = new Format[] {new AudioFormat(AudioFormat.ULAW_RTP)}; //Ulaw_RTP
+
+    /**
+     * Formats de transmission
+     */
+    private static final Format[] FORMATS = new Format[] {new AudioFormat(AudioFormat.ULAW_RTP)};
     private static final ContentDescriptor CONTENT_DESCRIPTOR =new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
     private Transmitter(String locator){
@@ -70,6 +79,11 @@ public class Transmitter {
         System.out.println("Transmiting...");
     }
 
+    /**
+     * Crée une transmission vers une uri à partir du microphone
+     * @param locator Uri à laquelle on transmet le stream audio
+     * @return l'objet Transmitter
+     */
     public static Transmitter to(String locator){
         return new Transmitter(locator);
     }

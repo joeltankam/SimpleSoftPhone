@@ -48,7 +48,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="245" max="32767" attributes="0"/>
+                      <EmptySpace pref="234" max="32767" attributes="0"/>
                       <Component id="exitButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="callButton" min="-2" max="-2" attributes="0"/>
@@ -72,7 +72,7 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="callButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Appeler"/>
+                <Property name="text" type="java.lang.String" value="D&#xe9;marrer"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="call"/>
