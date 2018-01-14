@@ -7,6 +7,7 @@ package ma.ac.emi.simplesoftphone.ui;
 
 import ma.ac.emi.simplesoftphone.rtp.RtpLink;
 
+import javax.swing.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -32,6 +33,7 @@ public class RtpPhone extends javax.swing.JFrame {
         }
 
         localAddressIpTextField.setText(ip);
+        destAddressTextField.setText(ip);
     }
 
     /**
@@ -99,7 +101,7 @@ public class RtpPhone extends javax.swing.JFrame {
 
         jPanel6.setLayout(new java.awt.GridLayout(2, 2, 0, 10));
 
-        jLabel2.setText("Votre adresse IP :");
+        jLabel2.setText("Votre adresse :");
         jPanel6.add(jLabel2);
 
         localAddressIpTextField.setEnabled(false);
@@ -192,12 +194,8 @@ public class RtpPhone extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(RtpPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {

@@ -25,7 +25,15 @@ public class RtpLink {
         return uriFromAddress(ip + ":" + port);
     }
 
+    public static String uriFromAddress(String ip, int port) {
+        return uriFromAddress(ip + ":" + port);
+    }
+
     public static String audioUriFromAddress(String ip, String port){
+        return audioUriFromAddress(ip + ":" + port);
+    }
+
+    public static String audioUriFromAddress(String ip, int port) {
         return audioUriFromAddress(ip + ":" + port);
     }
 
