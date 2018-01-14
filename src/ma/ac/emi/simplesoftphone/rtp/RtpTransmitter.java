@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Permet de transmettre un stream audio pour lire un stream audio à partir d'une uri
  */
-public class Transmitter {
+public class RtpTransmitter {
     /**
      * Uri à laquelle on transmet le stream audio
      */
@@ -30,7 +30,7 @@ public class Transmitter {
     private static final Format[] FORMATS = new Format[]{new AudioFormat(AudioFormat.ULAW_RTP)};
     private static final ContentDescriptor CONTENT_DESCRIPTOR = new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
-    private Transmitter(String locator) {
+    private RtpTransmitter(String locator) {
         this.locator = locator;
         mediaLocator = new MediaLocator("javasound://0");
 
@@ -83,10 +83,10 @@ public class Transmitter {
      * Crée une transmission vers une uri à partir du microphone
      *
      * @param locator Uri à laquelle on transmet le stream audio
-     * @return l'objet Transmitter
+     * @return l'objet RtpTransmitter
      */
-    public static Transmitter to(String locator) {
-        return new Transmitter(locator);
+    public static RtpTransmitter to(String locator) {
+        return new RtpTransmitter(locator);
     }
 
     public void stop() {

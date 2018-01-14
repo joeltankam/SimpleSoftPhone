@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Permet lire un stream audio à partir d'une uri
  */
-public class Receiver {
+public class RtpReceiver {
     /**
      * Uri à partir de laquelle on lit le stream audio
      */
@@ -20,7 +20,7 @@ public class Receiver {
      */
     private Player player;
 
-    private Receiver(String locator) {
+    private RtpReceiver(String locator) {
         this.locator = locator;
         this.mediaLocator = new MediaLocator(locator);
         try {
@@ -38,10 +38,10 @@ public class Receiver {
     /**
      * Crée un recepteur à partir d'une Uri
      * @param locator Uri à partir de laquelle on lit le stream audio
-     * @return l'objet Receiver
+     * @return l'objet RtpReceiver
      */
-    public static Receiver from(String locator){
-        return new Receiver(locator);
+    public static RtpReceiver from(String locator) {
+        return new RtpReceiver(locator);
     }
 
     public void stop() {

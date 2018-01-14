@@ -1,14 +1,14 @@
 package ma.ac.emi.simplesoftphone.rtp;
 
-public class Link {
-    Transmitter transmitter;
-    Receiver receiver;
+public class RtpLink {
+    RtpTransmitter transmitter;
+    RtpReceiver receiver;
 
-    private Link(String fromLocator, String toLocator) {
-        new Link(Transmitter.to(toLocator), Receiver.from(fromLocator));
+    private RtpLink(String fromLocator, String toLocator) {
+        new RtpLink(RtpTransmitter.to(toLocator), RtpReceiver.from(fromLocator));
     }
 
-    public Link(Transmitter transmitter, Receiver receiver) {
+    public RtpLink(RtpTransmitter transmitter, RtpReceiver receiver) {
         this.transmitter = transmitter;
         this.receiver = receiver;
     }
@@ -29,8 +29,8 @@ public class Link {
         return audioUriFromAddress(ip + ":" + port);
     }
 
-    public static Link start(String fromLocator, String toLocator) {
-        return new Link(Transmitter.to(toLocator), Receiver.from(fromLocator));
+    public static RtpLink start(String fromLocator, String toLocator) {
+        return new RtpLink(RtpTransmitter.to(toLocator), RtpReceiver.from(fromLocator));
     }
 
     public void stop() {

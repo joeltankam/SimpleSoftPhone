@@ -5,7 +5,7 @@
  */
 package ma.ac.emi.simplesoftphone.ui;
 
-import ma.ac.emi.simplesoftphone.rtp.Link;
+import ma.ac.emi.simplesoftphone.rtp.RtpLink;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -13,29 +13,25 @@ import java.net.UnknownHostException;
 /**
  * @author Joel
  */
-public class RTPPhone extends javax.swing.JFrame {
-    /**
-     * Adresse Ip locale
-     */
-    private String ip;
-
+public class RtpPhone extends javax.swing.JFrame {
     /**
      * Liaison RTP
      */
-    private Link link;
+    private RtpLink link;
 
     /**
-     * Creates new form RTPPhone
+     * Creates new form RtpPhone
      */
-    public RTPPhone() {
+    public RtpPhone() {
         initComponents();
+        String ip = "0.0.0.0"; // Adresse Ip locale
         try {
-            this.ip = InetAddress.getLocalHost().getHostAddress();
+            ip = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
-        localAddressIPTextField.setText(this.ip);
+        localAddressIpTextField.setText(ip);
     }
 
     /**
@@ -55,7 +51,7 @@ public class RTPPhone extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        localAddressIPTextField = new javax.swing.JTextField();
+        localAddressIpTextField = new javax.swing.JTextField();
         localAddressPortTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         destAddressTextField = new javax.swing.JTextField();
@@ -106,7 +102,7 @@ public class RTPPhone extends javax.swing.JFrame {
         jLabel2.setText("Votre adresse IP :");
         jPanel6.add(jLabel2);
 
-        localAddressIPTextField.setEnabled(false);
+        localAddressIpTextField.setEnabled(false);
 
         localAddressPortTextField.setToolTipText("Port");
 
@@ -115,13 +111,13 @@ public class RTPPhone extends javax.swing.JFrame {
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(localAddressIPTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                    .addComponent(localAddressIpTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(localAddressPortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(localAddressIPTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+                    .addComponent(localAddressIpTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
             .addComponent(localAddressPortTextField)
         );
 
@@ -170,9 +166,9 @@ public class RTPPhone extends javax.swing.JFrame {
      */
     private void call(java.awt.event.ActionEvent evt) {
         if (!localAddressPortTextField.getText().equals("") && !destAddressTextField.getText().equals("")) {
-            link = Link.start(
-                    Link.audioUriFromAddress(ip, localAddressPortTextField.getText()),
-                    Link.audioUriFromAddress(destAddressTextField.getText()
+            link = RtpLink.start(
+                    RtpLink.audioUriFromAddress(localAddressIpTextField.getText(), localAddressPortTextField.getText()),
+                    RtpLink.audioUriFromAddress(destAddressTextField.getText()
                     ));
         }
     }
@@ -203,20 +199,20 @@ public class RTPPhone extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RTPPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RtpPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RTPPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RtpPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RTPPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RtpPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RTPPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RtpPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RTPPhone().setVisible(true);
+                new RtpPhone().setVisible(true);
             }
         });
     }
@@ -232,7 +228,7 @@ public class RTPPhone extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JTextField localAddressIPTextField;
+    private javax.swing.JTextField localAddressIpTextField;
     private javax.swing.JTextField localAddressPortTextField;
     // End of variables declaration//GEN-END:variables
 }
