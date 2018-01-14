@@ -43,4 +43,8 @@ public class Receiver {
     public static Receiver from(String locator){
         return new Receiver(locator);
     }
+
+    public void stop() {
+        player.stop();
+    }
 }

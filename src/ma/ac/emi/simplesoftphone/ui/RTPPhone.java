@@ -5,9 +5,10 @@
  */
 package ma.ac.emi.simplesoftphone.ui;
 
+import ma.ac.emi.simplesoftphone.rtp.Link;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import ma.ac.emi.simplesoftphone.rtp.Helper;
 
 /**
  * @author Joel
@@ -17,6 +18,11 @@ public class RTPPhone extends javax.swing.JFrame {
      * Adresse Ip locale
      */
     private String ip;
+
+    /**
+     * Liaison RTP
+     */
+    private Link link;
 
     /**
      * Creates new form RTPPhone
@@ -65,7 +71,7 @@ public class RTPPhone extends javax.swing.JFrame {
             }
         });
 
-        exitButton.setText("Quitter");
+        exitButton.setText("Arréter");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exit(evt);
@@ -164,19 +170,20 @@ public class RTPPhone extends javax.swing.JFrame {
      */
     private void call(java.awt.event.ActionEvent evt) {
         if (!localAddressPortTextField.getText().equals("") && !destAddressTextField.getText().equals("")) {
-            Helper.link(
-                    Helper.audioUriFromAddress(this.ip, localAddressPortTextField.getText()),
-                    Helper.audioUriFromAddress(destAddressTextField.getText()
+            link = Link.start(
+                    Link.audioUriFromAddress(ip, localAddressPortTextField.getText()),
+                    Link.audioUriFromAddress(destAddressTextField.getText()
                     ));
         }
     }
 
     /**
-     * Ferme l'application
+     * Permet d'arreter la liaison RTP
      * @param evt
      */
     private void exit(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exit
-
+        if (link != null)
+            link.stop();
     }//GEN-LAST:event_exit
 
     /**
