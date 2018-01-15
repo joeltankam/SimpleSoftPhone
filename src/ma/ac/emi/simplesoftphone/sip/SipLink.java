@@ -10,6 +10,7 @@ import javax.sip.address.AddressFactory;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -32,6 +33,8 @@ public class SipLink {
     int sipPort; // Port Sip local.
     String protocol = "udp"; // Protocole local de transport (UDP).
 
+    String remoteSipAddress;
+
     int rtpPort; // Port Sip local.
 
     int remoteRtpPort; // Port Sip local.
@@ -42,7 +45,9 @@ public class SipLink {
     private static String transport;
     public static SdpFactory sdpFactory; //pour le corps du message SIP (SDP)
 
+    Request lastRequest;
     Dialog dialog; // Dialogue Client
+    ServerTransaction transaction;
 
     SipListenerImpl sipListener;
 
@@ -161,9 +166,60 @@ public class SipLink {
         return "No SDP set";
     }
 
+    public void takeCall() {
+        try {
+            Request request = transaction.getRequest();
+            Response response;
+            response = messageFactory.createResponse(200, request);
+
+            ((ToHeader) response.getHeader("To")).setTag(String.valueOf(tag));
+            response.addHeader(contactHeader);
+
+            ContentTypeHeader contentTypeHeader
+                    = headerFactory.createContentTypeHeader("application", "sdp");
+
+            String sdpData = createSDPData(rtpPort, 0); //create SDP content
+            response.setContent(sdpData, contentTypeHeader);
+
+            transaction.sendResponse(response);
+
+            ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
+            String remoteRtpAddress = RtpLink.audioUriFromAddress(viaHeader.getHost(), remoteRtpPort);
+
+            ui.addSentMessage(response.toString());
+            startRtp(remoteRtpAddress);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void hangUp() {
+        try {
+            Request request = transaction.getRequest();
+            Response response;
+            response = messageFactory.createResponse(Response.DECLINE, request);
+
+            ((ToHeader) response.getHeader("To")).setTag(String.valueOf(tag));
+            response.addHeader(contactHeader);
+
+            ContentTypeHeader contentTypeHeader
+                    = headerFactory.createContentTypeHeader("application", "sdp");
+
+            String sdpData = createSDPData(rtpPort, 0); //create SDP content
+            response.setContent(sdpData, contentTypeHeader);
+
+            transaction.sendResponse(response);
+            ui.addSentMessage(request.toString());
+            stopRtp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void call(String address) {
         try {
+            remoteSipAddress = address;
             // Créer le To Header
             // Obtenir l’adresse de destination à partir du text field.
             Address addressTo = this.addressFactory.createAddress(address);
@@ -228,11 +284,68 @@ public class SipLink {
         }
     }
 
-    public void end(String address) {
+    public void cancelCall(String address) {
         try {
             // Créer le To Header
             // Obtenir l’adresse de destination à partir du text field.
             Address addressTo = this.addressFactory.createAddress(address);
+
+            //addressTo.setDisplayName("");
+
+            ToHeader toHeader = headerFactory.createToHeader(addressTo, null);
+            // Créer le request URI pour les messages SIP.
+            javax.sip.address.URI requestURI = addressTo.getURI();
+            // Affecter le type du protocole de Transport TCP ou UDP??
+            transport = "udp";
+            // Créer les Via Headers
+            ArrayList viaHeaders = new ArrayList();
+            ViaHeader viaHeader = this.headerFactory.createViaHeader(
+                    this.ip,
+                    this.sipPort,
+                    transport,
+                    null);
+            // ajouter les via headers
+            viaHeaders.add(viaHeader);
+            // Créer le ContentTypeHeader
+            ContentTypeHeader contentTypeHeader
+                    = headerFactory.createContentTypeHeader("application", "sdp");
+            // Créer une nouvelle entête CallId
+            CallIdHeader callIdHeader = sipProvider.getNewCallId();
+            // Créer une nouvelle entête Cseq
+            CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, Request.CANCEL);
+            // Créer une nouvelle entête MaxForwardsHeader
+            MaxForwardsHeader maxForwards = headerFactory.createMaxForwardsHeader(70);
+            // Créer le "From" header.
+            FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress,
+                    String.valueOf(this.tag));
+
+            // Créer la requête Invite.
+            Request request = messageFactory.createRequest(
+                    requestURI,
+                    Request.INVITE,
+                    callIdHeader,
+                    cSeqHeader,
+                    fromHeader,
+                    toHeader,
+                    viaHeaders,
+                    maxForwards
+            );
+
+            // Ajouter l’adresse de contacte.
+            //contactAddress.setDisplayName("Alice Contact");
+            contactHeader = headerFactory.createContactHeader(contactAddress);
+            request.addHeader(contactHeader);
+            ui.addSentMessage(request.toString());
+        } catch (Exception e) {
+            //Afficher l’erreur en cas de problème.
+            System.out.println("Failed: " + e.getMessage() + "\n");
+        }
+    }
+
+    public void endCall() {
+        try {
+            // Créer le To Header
+            Address addressTo = this.addressFactory.createAddress(remoteSipAddress);
             //addressTo.setDisplayName("");
             ToHeader toHeader = headerFactory.createToHeader(addressTo, null);
             // Créer le request URI pour les messages SIP.
@@ -251,7 +364,7 @@ public class SipLink {
             ContentTypeHeader contentTypeHeader
                     = headerFactory.createContentTypeHeader("application", "sdp");
             // Créer une nouvelle entête CallId
-            CallIdHeader callIdHeader = sipProvider.getNewCallId();
+            CallIdHeader callIdHeader = dialog.getCallId();
             // Créer une nouvelle entête Cseq
             CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, Request.BYE);
             // Créer une nouvelle entête MaxForwardsHeader
@@ -271,12 +384,9 @@ public class SipLink {
             request.addHeader(contactHeader);
 
             // Créer la transaction client.
-            ClientTransaction inviteTid = this.sipProvider.getNewClientTransaction(request);
-            // envoyer la requête
-            inviteTid.sendRequest();
-
-            dialog = inviteTid.getDialog();
-            // Afficher le message dans le text area.
+            ClientTransaction endTid = this.sipProvider.getNewClientTransaction(request);
+            dialog.sendRequest(endTid);
+            stopRtp();
             ui.addSentMessage(request.toString());
         } catch (Exception e) {
             //Afficher l’erreur en cas de problème.
@@ -289,6 +399,11 @@ public class SipLink {
                 RtpLink.audioUriFromAddress(ip, rtpPort),
                 remoteAddress
         );
+    }
+
+    public void stopRtp() {
+        if (rtpLink != null)
+            rtpLink.stop();
     }
 
     public static String uriFromAddress(String address) {

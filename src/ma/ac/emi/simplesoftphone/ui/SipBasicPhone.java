@@ -7,8 +7,12 @@ package ma.ac.emi.simplesoftphone.ui;
 
 import ma.ac.emi.simplesoftphone.sip.SipLink;
 
+import javax.media.Player;
 import javax.sip.InvalidArgumentException;
+import javax.sound.sampled.*;
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -17,7 +21,20 @@ import java.net.UnknownHostException;
  */
 public class SipBasicPhone extends javax.swing.JFrame {
 
-    SipLink link;
+    private SipLink link;
+    private String calleeAdress;
+    private boolean establishing = false;
+    private boolean ringing = false;
+    private boolean calling = false;
+
+    private Player player;
+    private Clip clip;
+
+    private static final String RINGING_MEDIA = "assets/ringing.wav";
+    private static final String RINGTONE_MEDIA = "assets/ringtone.wav";
+
+    private JOptionPane optionPane;
+    private JDialog dialog;
 
     /**
      * Creates new form SipBasicPhone
@@ -36,17 +53,33 @@ public class SipBasicPhone extends javax.swing.JFrame {
         destRtpAddressIpTextField.setText(ip);
         destSipAddressIpTextField.setText(ip);
 
-        try {
+        /*try {
+
             link = new SipLink(ip,
                     Integer.parseInt(localSipAddressPortTextField.getText()),
                     Integer.parseInt(localRtpAddressPortTextField.getText()),
                     this);
             disableConfiguration();
         } catch (InvalidArgumentException e) {
-            e.printStackTrace();
             enableConfiguration();
             callButton.setEnabled(false);
-        }
+        }*/
+
+        // DEBUG
+        while (true)
+            try {
+
+                link = new SipLink(ip,
+                        Integer.parseInt(localSipAddressPortTextField.getText()),
+                        Integer.parseInt(localRtpAddressPortTextField.getText()),
+                        this);
+                disableConfiguration();
+                break;
+            } catch (InvalidArgumentException e) {
+                localSipAddressPortTextField.setText(String.valueOf(Integer.parseInt(localSipAddressPortTextField.getText()) + 1));
+                localRtpAddressPortTextField.setText(String.valueOf(Integer.parseInt(localRtpAddressPortTextField.getText()) + 1));
+            }
+
     }
 
     /**
@@ -430,23 +463,144 @@ public class SipBasicPhone extends javax.swing.JFrame {
     }//GEN-LAST:event_configure
 
     private void call(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_call
-        link.call(SipLink.uriFromAddress(
+        calleeAdress = SipLink.uriFromAddress(
                 destSipAddressIpTextField.getText(),
                 Integer.parseInt(destSipAddressPortTextField.getText())
-        ));
+        );
+        link.call(calleeAdress);
 
-        //Custom button text
-        Object[] options = {"Annuler"};
-        int n = JOptionPane.showOptionDialog(this,
+        establishing = true;
+
+        String options[] = {"Raccrocher"};
+        optionPane = new JOptionPane(
                 "Etablissement de la connexion",
-                "Appel en cours",
-                JOptionPane.OK_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
                 null,
                 options,
                 options[0]);
 
+        dialog = optionPane.createDialog(this,
+                "Appel en cours");
+        dialog.setVisible(true);
+
+        String selected = (String) optionPane.getValue();
+        if (selected.equals(options[0])) {
+            hangUp();
+        }
+
     }//GEN-LAST:event_call
+
+    public void ringing() {
+        optionPane.setMessage("Sonnerie...");
+        playRinging();
+        ringing = true;
+    }
+
+    private void hangUp() {
+        if (calling) {
+            link.endCall();
+        } else if (establishing || ringing)
+            link.cancelCall(calleeAdress);
+        else
+            link.hangUp();
+
+        resetState();
+    }
+
+    public void incomingCall(String from) {
+        playRingtone();
+        String options[] = {"Raccrocher", "Décrocher"};
+        optionPane = new JOptionPane(
+                from,
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.YES_NO_OPTION,
+                null,
+                options,
+                options[1]);
+
+        dialog = optionPane.createDialog(this,
+                "Appel entrant");
+        dialog.setVisible(true);
+
+        String selected = (String) optionPane.getValue();
+        stopSound();
+        if (selected.equals(options[1])) {
+            takeCall();
+        } else {
+            hangUp();
+        }
+    }
+
+    public void answeredCall() {
+        calling = true;
+        optionPane.setMessage("Appel en cours");
+        stopSound();
+    }
+
+    public void takeCall() {
+        link.takeCall();
+        calling = true;
+        String options[] = {"Raccrocher"};
+        optionPane = new JOptionPane(
+                "Appel en cours",
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                options,
+                options[0]);
+
+        dialog = optionPane.createDialog(this,
+                "Appel en cours");
+        dialog.setVisible(true);
+
+        String selected = (String) optionPane.getValue();
+        if (selected.equals(options[0])) {
+            hangUp();
+        }
+    }
+
+    public void cancelCall() {
+        dialog.setVisible(false);
+        dialog.dispose();
+        resetState();
+    }
+
+    private void resetState() {
+        establishing = false;
+        ringing = false;
+        calling = false;
+    }
+
+    private void playRinging() {
+        playSound(RINGING_MEDIA);
+    }
+
+    private void playRingtone() {
+        playSound(RINGTONE_MEDIA);
+    }
+
+    private void playSound(String locator) {
+        try {
+            File soundFile = new File(locator);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopSound() {
+        if (clip != null)
+            clip.stop();
+    }
 
     /**
      * @param args the command line arguments
@@ -490,6 +644,7 @@ public class SipBasicPhone extends javax.swing.JFrame {
         localRtpAddressPortTextField.setEnabled(false);
         configureButton.setEnabled(false);
     }
+
 
     public void addReceivedMessage(String receivedMessage) {
         receivedMessagesTextArea.setText(receivedMessagesTextArea.getText() + receivedMessage + "\n");
@@ -539,5 +694,7 @@ public class SipBasicPhone extends javax.swing.JFrame {
     private javax.swing.JTextField localSipAddressPortTextField;
     private javax.swing.JTextArea receivedMessagesTextArea;
     private javax.swing.JTextArea sentMessagesTextArea;
+
+
     // End of variables declaration//GEN-END:variables
 }
