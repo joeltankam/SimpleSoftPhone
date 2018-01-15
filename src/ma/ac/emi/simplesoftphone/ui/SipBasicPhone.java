@@ -7,7 +7,6 @@ package ma.ac.emi.simplesoftphone.ui;
 
 import ma.ac.emi.simplesoftphone.sip.SipLink;
 
-import javax.media.Player;
 import javax.sip.InvalidArgumentException;
 import javax.sound.sampled.*;
 import javax.swing.*;
@@ -27,7 +26,6 @@ public class SipBasicPhone extends javax.swing.JFrame {
     private boolean ringing = false;
     private boolean calling = false;
 
-    private Player player;
     private Clip clip;
 
     private static final String RINGING_MEDIA = "assets/ringing.wav";
@@ -584,7 +582,7 @@ public class SipBasicPhone extends javax.swing.JFrame {
         try {
             File soundFile = new File(locator);
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
-            Clip clip = AudioSystem.getClip();
+            clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
