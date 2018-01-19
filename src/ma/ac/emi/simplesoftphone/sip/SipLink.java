@@ -284,11 +284,11 @@ public class SipLink {
         }
     }
 
-    public void cancelCall(String address) {
+    public void cancelCall() {
         try {
             // Créer le To Header
             // Obtenir l’adresse de destination à partir du text field.
-            Address addressTo = this.addressFactory.createAddress(address);
+            Address addressTo = this.addressFactory.createAddress(remoteSipAddress);
 
             //addressTo.setDisplayName("");
 
@@ -310,9 +310,10 @@ public class SipLink {
             ContentTypeHeader contentTypeHeader
                     = headerFactory.createContentTypeHeader("application", "sdp");
             // Créer une nouvelle entête CallId
-            CallIdHeader callIdHeader = sipProvider.getNewCallId();
+            CallIdHeader callIdHeader = dialog.getCallId();
+
             // Créer une nouvelle entête Cseq
-            CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, Request.CANCEL);
+            CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(dialog.getLocalSeqNumber(), Request.CANCEL);
             // Créer une nouvelle entête MaxForwardsHeader
             MaxForwardsHeader maxForwards = headerFactory.createMaxForwardsHeader(70);
             // Créer le "From" header.
@@ -322,7 +323,7 @@ public class SipLink {
             // Créer la requête Invite.
             Request request = messageFactory.createRequest(
                     requestURI,
-                    Request.INVITE,
+                    Request.CANCEL,
                     callIdHeader,
                     cSeqHeader,
                     fromHeader,
@@ -335,6 +336,9 @@ public class SipLink {
             //contactAddress.setDisplayName("Alice Contact");
             contactHeader = headerFactory.createContactHeader(contactAddress);
             request.addHeader(contactHeader);
+
+            ClientTransaction endTid = this.sipProvider.getNewClientTransaction(request);
+            dialog.sendRequest(endTid);
             ui.addSentMessage(request.toString());
         } catch (Exception e) {
             //Afficher l’erreur en cas de problème.
@@ -404,6 +408,10 @@ public class SipLink {
     public void stopRtp() {
         if (rtpLink != null)
             rtpLink.stop();
+    }
+
+    public void sendRequest() {
+
     }
 
     public static String uriFromAddress(String address) {

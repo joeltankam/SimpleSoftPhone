@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
 public class SipBasicPhone extends javax.swing.JFrame {
 
     private SipLink link;
-    private String calleeAdress;
+    private String calleeAddress;
     private boolean establishing = false;
     private boolean ringing = false;
     private boolean calling = false;
@@ -62,9 +62,8 @@ public class SipBasicPhone extends javax.swing.JFrame {
             enableConfiguration();
             callButton.setEnabled(false);
         }*/
-
         // DEBUG
-        while (true)
+        while (true) {
             try {
 
                 link = new SipLink(ip,
@@ -77,6 +76,7 @@ public class SipBasicPhone extends javax.swing.JFrame {
                 localSipAddressPortTextField.setText(String.valueOf(Integer.parseInt(localSipAddressPortTextField.getText()) + 1));
                 localRtpAddressPortTextField.setText(String.valueOf(Integer.parseInt(localRtpAddressPortTextField.getText()) + 1));
             }
+        }
 
     }
 
@@ -91,9 +91,16 @@ public class SipBasicPhone extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
+        callActionsPanel = new javax.swing.JPanel();
+        incomingCallPanel = new javax.swing.JPanel();
+        callingPanel = new javax.swing.JPanel();
+        callPanel = new javax.swing.JPanel();
         callButton = new javax.swing.JButton();
+        hangupButton = new javax.swing.JButton();
+        endCallButton = new javax.swing.JButton();
+        takeCallButton = new javax.swing.JButton();
+        incomingCallContentLabel = new javax.swing.JLabel();
+        callingContentLabel = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -131,33 +138,103 @@ public class SipBasicPhone extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
+        callActionsPanel.setLayout(new java.awt.BorderLayout());
 
         callButton.setText("Appeler");
         callButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                call(evt);
+                call();
             }
         });
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addContainerGap(318, Short.MAX_VALUE)
-                                .addComponent(callButton)
+        hangupButton.setText("Racrocher");
+        hangupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hangUp();
+            }
+        });
+
+        endCallButton.setText("Racrocher");
+        endCallButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hangUp();
+            }
+        });
+
+        takeCallButton.setText("Décrocher");
+        takeCallButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                takeCall();
+            }
+        });
+
+        javax.swing.GroupLayout callPanelLayout = new javax.swing.GroupLayout(callPanel);
+        callPanel.setLayout(callPanelLayout);
+        callPanelLayout.setHorizontalGroup(
+                callPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, callPanelLayout.createSequentialGroup()
+                                .addContainerGap(302, Short.MAX_VALUE).addComponent(callButton)
                                 .addContainerGap())
         );
-        jPanel5Layout.setVerticalGroup(
-                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+        callPanelLayout.setVerticalGroup(
+                callPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, callPanelLayout.createSequentialGroup()
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(callButton)
                                 .addContainerGap())
         );
 
-        jPanel4.add(jPanel5, java.awt.BorderLayout.PAGE_END);
+
+        callActionsPanel.add(callPanel, java.awt.BorderLayout.PAGE_END);
+
+        incomingCallContentLabel.setText("");
+
+        javax.swing.GroupLayout incomingCallPanelLayout = new javax.swing.GroupLayout(incomingCallPanel);
+        incomingCallPanel.setLayout(incomingCallPanelLayout);
+        incomingCallPanelLayout.setHorizontalGroup(
+                incomingCallPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, incomingCallPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(incomingCallContentLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 175, Short.MAX_VALUE)
+                                .addComponent(hangupButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(takeCallButton)
+                                .addContainerGap())
+        );
+        incomingCallPanelLayout.setVerticalGroup(
+                incomingCallPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, incomingCallPanelLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(incomingCallPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(takeCallButton)
+                                        .addComponent(hangupButton)
+                                        .addComponent(incomingCallContentLabel))
+                                .addContainerGap())
+        );
+
+        callingContentLabel.setText("");
+
+        javax.swing.GroupLayout callingPanelLayout = new javax.swing.GroupLayout(callingPanel);
+        callingPanel.setLayout(callingPanelLayout);
+        callingPanelLayout.setHorizontalGroup(
+                callingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, callingPanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(callingContentLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 175, Short.MAX_VALUE)
+                                .addComponent(endCallButton)
+                                .addContainerGap())
+        );
+        callingPanelLayout.setVerticalGroup(
+                callingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, callingPanelLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(callingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(endCallButton)
+                                        .addComponent(callingContentLabel))
+                                .addContainerGap())
+        );
 
         jPanel7.setLayout(new java.awt.GridLayout(2, 2));
 
@@ -231,20 +308,20 @@ public class SipBasicPhone extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(152, Short.MAX_VALUE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel4.add(jPanel6, java.awt.BorderLayout.CENTER);
+        callActionsPanel.add(jPanel6, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(callActionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(callActionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Appel", jPanel1);
@@ -460,107 +537,74 @@ public class SipBasicPhone extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_configure
 
-    private void call(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_call
-        calleeAdress = SipLink.uriFromAddress(
+    private void call() {//GEN-FIRST:event_call
+        calleeAddress = SipLink.uriFromAddress(
                 destSipAddressIpTextField.getText(),
                 Integer.parseInt(destSipAddressPortTextField.getText())
         );
-        link.call(calleeAdress);
+        link.call(calleeAddress);
 
         establishing = true;
 
-        String options[] = {"Raccrocher"};
-        optionPane = new JOptionPane(
-                "Etablissement de la connexion",
-                JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null,
-                options,
-                options[0]);
-
-        dialog = optionPane.createDialog(this,
-                "Appel en cours");
-        dialog.setVisible(true);
-
-        String selected = (String) optionPane.getValue();
-        if (selected.equals(options[0])) {
-            hangUp();
-        }
+        callPanel.setVisible(false);
+        callingPanel.setVisible(true);
+        callActionsPanel.add(callingPanel, java.awt.BorderLayout.PAGE_END);
+        callingContentLabel.setText("Etablissement de la connexion");
 
     }//GEN-LAST:event_call
 
     public void ringing() {
-        optionPane.setMessage("Sonnerie...");
+        callingContentLabel.setText("Sonnerie...");
         playRinging();
         ringing = true;
     }
 
     private void hangUp() {
+        incomingCallPanel.setVisible(false);
+        callingPanel.setVisible(false);
+        callPanel.setVisible(true);
+        callActionsPanel.add(callPanel, java.awt.BorderLayout.PAGE_END);
+        stopSound();
         if (calling) {
             link.endCall();
-        } else if (establishing || ringing)
-            link.cancelCall(calleeAdress);
-        else
+        } else if (establishing || ringing) {
+            link.cancelCall();
+        } else {
             link.hangUp();
-
+        }
         resetState();
     }
 
     public void incomingCall(String from) {
         playRingtone();
-        String options[] = {"Raccrocher", "Décrocher"};
-        optionPane = new JOptionPane(
-                from,
-                JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.YES_NO_OPTION,
-                null,
-                options,
-                options[1]);
-
-        dialog = optionPane.createDialog(this,
-                "Appel entrant");
-        dialog.setVisible(true);
-
-        String selected = (String) optionPane.getValue();
-        stopSound();
-        if (selected.equals(options[1])) {
-            takeCall();
-        } else {
-            hangUp();
-        }
+        callPanel.setVisible(false);
+        incomingCallPanel.setVisible(true);
+        callActionsPanel.add(incomingCallPanel, java.awt.BorderLayout.PAGE_END);
+        incomingCallContentLabel.setText(from);
     }
 
     public void answeredCall() {
-        calling = true;
-        optionPane.setMessage("Appel en cours");
         stopSound();
+        calling = true;
+        callingContentLabel.setText("Appel en cours");
     }
 
     public void takeCall() {
+        stopSound();
         link.takeCall();
         calling = true;
-        String options[] = {"Raccrocher"};
-        optionPane = new JOptionPane(
-                "Appel en cours",
-                JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null,
-                options,
-                options[0]);
-
-        dialog = optionPane.createDialog(this,
-                "Appel en cours");
-        dialog.setVisible(true);
-
-        String selected = (String) optionPane.getValue();
-        if (selected.equals(options[0])) {
-            hangUp();
-        }
+        incomingCallPanel.setVisible(false);
+        callingPanel.setVisible(true);
+        callActionsPanel.add(callingPanel, java.awt.BorderLayout.PAGE_END);
+        callingContentLabel.setText("Appel en cours...");
     }
 
     public void cancelCall() {
-        dialog.setVisible(false);
-        dialog.dispose();
+        stopSound();
+        incomingCallPanel.setVisible(false);
+        callingPanel.setVisible(false);
+        callPanel.setVisible(true);
+        callActionsPanel.add(callPanel, java.awt.BorderLayout.PAGE_END);
         resetState();
     }
 
@@ -596,8 +640,9 @@ public class SipBasicPhone extends javax.swing.JFrame {
     }
 
     private void stopSound() {
-        if (clip != null)
+        if (clip != null) {
             clip.stop();
+        }
     }
 
     /**
@@ -643,7 +688,6 @@ public class SipBasicPhone extends javax.swing.JFrame {
         configureButton.setEnabled(false);
     }
 
-
     public void addReceivedMessage(String receivedMessage) {
         receivedMessagesTextArea.setText(receivedMessagesTextArea.getText() + receivedMessage + "\n");
     }
@@ -654,7 +698,12 @@ public class SipBasicPhone extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton callButton;
+    private javax.swing.JButton hangupButton;
+    private javax.swing.JButton takeCallButton;
+    private javax.swing.JButton endCallButton;
     private javax.swing.JButton configureButton;
+    private javax.swing.JLabel incomingCallContentLabel;
+    private javax.swing.JLabel callingContentLabel;
     private javax.swing.JTextField destRtpAddressIpTextField;
     private javax.swing.JTextField destRtpAddressPortTextField;
     private javax.swing.JTextField destSipAddressIpTextField;
@@ -677,8 +726,10 @@ public class SipBasicPhone extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel callActionsPanel;
+    private javax.swing.JPanel callPanel;
+    private javax.swing.JPanel callingPanel;
+    private javax.swing.JPanel incomingCallPanel;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
@@ -692,7 +743,5 @@ public class SipBasicPhone extends javax.swing.JFrame {
     private javax.swing.JTextField localSipAddressPortTextField;
     private javax.swing.JTextArea receivedMessagesTextArea;
     private javax.swing.JTextArea sentMessagesTextArea;
-
-
     // End of variables declaration//GEN-END:variables
 }

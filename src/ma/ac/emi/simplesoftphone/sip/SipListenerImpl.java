@@ -3,6 +3,7 @@ package ma.ac.emi.simplesoftphone.sip;
 import ma.ac.emi.simplesoftphone.rtp.RtpLink;
 import ma.ac.emi.simplesoftphone.ui.SipBasicPhone;
 
+import javax.sdp.Connection;
 import javax.sdp.MediaDescription;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
@@ -107,6 +108,8 @@ public class SipListenerImpl implements SipListener {
 
                     Vector mediaDescs = sessionDescription.getMediaDescriptions(false);
 
+                    Connection c = sessionDescription.getConnection();
+
                     MediaDescription am = (MediaDescription) mediaDescs.get(0);
 
                     sipLink.remoteRtpPort = am.getMedia().getMediaPort();
@@ -116,11 +119,11 @@ public class SipListenerImpl implements SipListener {
                     sipLink.contactHeader = sipLink.headerFactory.createContactHeader(sipLink.contactAddress);
                     request.addHeader(sipLink.contactHeader);
                     sipLink.dialog.sendAck(request);
-                    String remoteRtpAdfress = RtpLink.audioUriFromAddress(viaHeader.getHost(), sipLink.remoteRtpPort);
+                    String remoteRtpAddress = RtpLink.audioUriFromAddress(c.getAddress(), sipLink.remoteRtpPort);
 
                     sipLink.ui.answeredCall();
                     sipLink.ui.addSentMessage(request.toString());
-                    sipLink.startRtp(remoteRtpAdfress);
+                    sipLink.startRtp(remoteRtpAddress);
                 } else if (response.getStatusCode() == Response.RINGING) {
                     sipLink.ui.ringing();
                 } else if (response.getStatusCode() == Response.DECLINE) {
