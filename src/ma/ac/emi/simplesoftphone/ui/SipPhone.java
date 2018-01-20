@@ -47,6 +47,8 @@ public class SipPhone extends JFrame implements SipCall {
         localSipAddressIpTextField.setText(ip);
         destRtpAddressIpTextField.setText(ip);
         destSipAddressIpTextField.setText(ip);
+        proxySipAddressIpTextField.setText(ip);
+        divertSipAddressIpTextField.setText(ip);
 
         /*try {
 
@@ -114,8 +116,8 @@ public class SipPhone extends JFrame implements SipCall {
         destRtpAddressPortTextField = new javax.swing.JTextField();
         jPanel25 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
-        serviceRegisterButton = new javax.swing.JButton();
-        serviceCancelButton = new javax.swing.JButton();
+        registerServiceButton = new javax.swing.JButton();
+        cancelServiceButton = new javax.swing.JButton();
         jPanel27 = new javax.swing.JPanel();
         jPanel28 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
@@ -167,32 +169,16 @@ public class SipPhone extends JFrame implements SipCall {
         callActionsPanel.setLayout(new java.awt.BorderLayout());
 
         callButton.setText("Appeler");
-        callButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                call();
-            }
-        });
+        callButton.addActionListener(evt -> call());
 
         hangupButton.setText("Racrocher");
-        hangupButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hangUp();
-            }
-        });
+        hangupButton.addActionListener(evt -> hangUp());
 
         endCallButton.setText("Racrocher");
-        endCallButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hangUp();
-            }
-        });
+        endCallButton.addActionListener(evt -> hangUp());
 
         takeCallButton.setText("Décrocher");
-        takeCallButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                takeCall();
-            }
-        });
+        takeCallButton.addActionListener(evt -> takeCall());
 
         javax.swing.GroupLayout callPanelLayout = new javax.swing.GroupLayout(callPanel);
         callPanel.setLayout(callPanelLayout);
@@ -354,10 +340,12 @@ public class SipPhone extends JFrame implements SipCall {
 
         jPanel25.setLayout(new java.awt.BorderLayout());
 
-        serviceRegisterButton.setText("Enregistrer");
+        registerServiceButton.setText("Enregistrer");
+        registerServiceButton.addActionListener(evt -> registerService());
 
-        serviceCancelButton.setText("Annuler");
-        serviceCancelButton.setEnabled(false);
+        cancelServiceButton.setText("Annuler");
+        cancelServiceButton.addActionListener(evt -> cancelService());
+        cancelServiceButton.setEnabled(false);
 
         javax.swing.GroupLayout jPanel26Layout = new javax.swing.GroupLayout(jPanel26);
         jPanel26.setLayout(jPanel26Layout);
@@ -365,9 +353,9 @@ public class SipPhone extends JFrame implements SipCall {
                 jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel26Layout.createSequentialGroup()
                                 .addContainerGap(218, Short.MAX_VALUE)
-                                .addComponent(serviceCancelButton)
+                                .addComponent(cancelServiceButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(serviceRegisterButton)
+                                .addComponent(registerServiceButton)
                                 .addContainerGap())
         );
         jPanel26Layout.setVerticalGroup(
@@ -375,8 +363,8 @@ public class SipPhone extends JFrame implements SipCall {
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel26Layout.createSequentialGroup()
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(serviceRegisterButton)
-                                        .addComponent(serviceCancelButton))
+                                        .addComponent(registerServiceButton)
+                                        .addComponent(cancelServiceButton))
                                 .addContainerGap())
         );
 
@@ -388,7 +376,6 @@ public class SipPhone extends JFrame implements SipCall {
         jPanel28.add(jLabel9);
 
         divertSipAddressIpTextField.setToolTipText("IP");
-        divertSipAddressIpTextField.setEnabled(false);
         divertSipAddressPortTextField.setText("6060");
         divertSipAddressPortTextField.setToolTipText("Port");
 
@@ -417,6 +404,7 @@ public class SipPhone extends JFrame implements SipCall {
         jPanel28.add(jLabel10);
 
         divertConditionComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Sans condition", "Si occupé", "Si pas de réponse"}));
+        divertConditionComboBox.setEnabled(false);
 
         javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
         jPanel30.setLayout(jPanel30Layout);
@@ -460,6 +448,8 @@ public class SipPhone extends JFrame implements SipCall {
         jPanel20.setLayout(new java.awt.BorderLayout());
 
         proxyRegisterButton.setText("Enregistrer");
+        proxyRegisterButton.addActionListener(evt -> register());
+
 
         javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
         jPanel21.setLayout(jPanel21Layout);
@@ -776,6 +766,29 @@ public class SipPhone extends JFrame implements SipCall {
 
     }//GEN-LAST:event_call
 
+    private void register() {
+        String proxyAddress = SipLink.uriFromAddress(
+                proxySipAddressIpTextField.getText(),
+                Integer.parseInt(proxySipAddressPortTextField.getText())
+        );
+        link.register(proxyAddress);
+        disableRegistration();
+    }
+
+    private void registerService() {
+        String address = SipLink.uriFromAddress(
+                divertSipAddressIpTextField.getText(),
+                Integer.parseInt(divertSipAddressPortTextField.getText())
+        );
+        link.registerService(address);
+        disableServiceRegistration();
+    }
+
+    private void cancelService() {
+        link.cancelService();
+        enableServiceRegistration();
+    }
+
     public void ringing() {
         callingContentLabel.setText("Sonnerie...");
         playRinging();
@@ -905,10 +918,33 @@ public class SipPhone extends JFrame implements SipCall {
         configureButton.setEnabled(true);
     }
 
+    private void enableServiceRegistration() {
+        //divertConditionComboBox.setEnabled(true);
+        divertSipAddressIpTextField.setEnabled(true);
+        divertSipAddressPortTextField.setEnabled(true);
+        registerServiceButton.setEnabled(true);
+        cancelServiceButton.setEnabled(false);
+    }
+
     private void disableConfiguration() {
         localSipAddressPortTextField.setEnabled(false);
         localRtpAddressPortTextField.setEnabled(false);
         configureButton.setEnabled(false);
+    }
+
+    private void disableRegistration() {
+        proxySipAddressIpTextField.setEnabled(false);
+        proxySipAddressPortTextField.setEnabled(false);
+        numberTextField.setEnabled(false);
+        proxyRegisterButton.setEnabled(false);
+    }
+
+    private void disableServiceRegistration() {
+        divertConditionComboBox.setEnabled(false);
+        divertSipAddressIpTextField.setEnabled(false);
+        divertSipAddressPortTextField.setEnabled(false);
+        registerServiceButton.setEnabled(false);
+        cancelServiceButton.setEnabled(true);
     }
 
     public void addReceivedMessage(String receivedMessage) {
@@ -935,7 +971,7 @@ public class SipPhone extends JFrame implements SipCall {
     private javax.swing.JComboBox<String> divertConditionComboBox;
     private javax.swing.JTextField divertSipAddressIpTextField;
     private javax.swing.JTextField divertSipAddressPortTextField;
-    private javax.swing.JButton serviceCancelButton;
+    private javax.swing.JButton cancelServiceButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -991,6 +1027,6 @@ public class SipPhone extends JFrame implements SipCall {
     private javax.swing.JTextField proxySipAddressPortTextField;
     private javax.swing.JTextArea receivedMessagesTextArea;
     private javax.swing.JTextArea sentMessagesTextArea;
-    private javax.swing.JButton serviceRegisterButton;
+    private javax.swing.JButton registerServiceButton;
     // End of variables declaration//GEN-END:variables
 }

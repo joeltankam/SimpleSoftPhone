@@ -66,6 +66,17 @@ public class SipListenerServer implements SipListener {
         }
     }
 
+    public void forward(Request request) {
+        Request newRequest = (Request) request.clone();
+
+        try {
+            sipProvider.sendRequest(newRequest);
+            System.out.println("newRequest = " + newRequest);
+        } catch (SipException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void processRequest(RequestEvent requestEvent) {
         // Get the request.
@@ -77,41 +88,34 @@ public class SipListenerServer implements SipListener {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
             if (null == transaction) {
-                transaction = this.sipProvider.getNewServerTransaction(request);
+                if (!request.getMethod().equals(Request.ACK))
+                    transaction = this.sipProvider.getNewServerTransaction(request);
             }
 
             // Update the SIP message table.
-            ui.updateTable(requestEvent, request, transaction);
+            if (!request.getMethod().equals(Request.ACK))
+                ui.updateTable(requestEvent, request, transaction);
 
-            // Process the request and send a response.
-            Response response;
-            if (request.getMethod().equals("REGISTER")) {
-                // If the request is a REGISTER.
-                response = this.messageFactory.createResponse(200, request);
-                ((ToHeader) response.getHeader("To")).setTag(String.valueOf(this.tag));
-                response.addHeader(this.contactHeader);
-                transaction.sendResponse(response);
-                ui.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-            } else if (request.getMethod().equals("INVITE")) {
-                // If the request is an INVITE.
-                response = this.messageFactory.createResponse(200, request);
-                ((ToHeader) response.getHeader("To")).setTag(String.valueOf(this.tag));
-                response.addHeader(this.contactHeader);
-                transaction.sendResponse(response);
-                ui.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-            } else if (request.getMethod().equals("ACK")) {
-                // If the request is an ACK.
-            } else if (request.getMethod().equals("BYE")) {
-                // If the request is a BYE.
-                response = this.messageFactory.createResponse(200, request);
-                ((ToHeader) response.getHeader("To")).setTag(String.valueOf(this.tag));
-                response.addHeader(this.contactHeader);
-                transaction.sendResponse(response);
-                ui.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+            ToHeader toHeader = (ToHeader) request.getHeader(ToHeader.NAME);
+            if (!toHeader.getAddress().equals(contactAddress)) {
+                forward(request);
+            } else {
+                // Process the request and send a response.
+                Response response;
+                if (request.getMethod().equals("REGISTER")) {
+                    // If the request is a REGISTER.
+                    response = this.messageFactory.createResponse(Response.OK, request);
+                    ((ToHeader) response.getHeader("To")).setTag(String.valueOf(this.tag));
+                    response.addHeader(this.contactHeader);
+                    transaction.sendResponse(response);
+                    ui.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+                }
             }
         } catch (SipException e) {
+            e.printStackTrace();
             ui.jTextArea.append("\nERROR (SIP): " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             ui.jTextArea.append("\nERROR: " + e.getMessage());
         }
     }

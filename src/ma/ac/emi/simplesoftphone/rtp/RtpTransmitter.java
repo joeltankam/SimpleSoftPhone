@@ -69,6 +69,9 @@ public class RtpTransmitter {
 
     public void stop() {
         mediaProcessor.stop();
+        mediaProcessor.deallocate();
+        mediaProcessor.close();
+
         try {
             dataSink.stop();
             dataSink.close();

@@ -21,13 +21,15 @@ public class SipLink {
     SipProvider sipProvider;
     MessageFactory messageFactory;
     HeaderFactory headerFactory;
-    private AddressFactory addressFactory;
+    AddressFactory addressFactory;
     private ListeningPoint listeningPoint;
 
     private String ip;
     private int sipPort;
 
     String remoteSipAddress;
+    String proxySipAddress;
+    String divertSipAddress;
 
     private int rtpPort;
 
@@ -101,6 +103,7 @@ public class SipLink {
             e.printStackTrace();
         }
         this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
+
 
         SipListenerClient sipListener = new SipListenerClient(this);
         try {
@@ -235,6 +238,30 @@ public class SipLink {
         }
     }
 
+    public void register(String proxyAddress) {
+        try {
+            remoteSipAddress = proxyAddress;
+
+            String sdpData = createSDPData(rtpPort);
+            Request request = createRequest(Request.REGISTER, proxyAddress, sdpData);
+
+            sipProvider.sendRequest(request);
+
+            ui.addSentMessage(request.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registerService(String divertAddress) {
+        divertSipAddress = divertAddress;
+    }
+
+    public void cancelService() {
+        divertSipAddress = null;
+    }
+
+
     public void cancelCall() {
         try {
             Request request = createRequest(Request.CANCEL, remoteSipAddress);
@@ -251,7 +278,6 @@ public class SipLink {
     public void endCall() {
         try {
             Request request = createRequest(Request.BYE, remoteSipAddress, null, dialog.getCallId());
-
             ClientTransaction endTid = this.sipProvider.getNewClientTransaction(request);
             dialog.sendRequest(endTid);
 
@@ -311,7 +337,6 @@ public class SipLink {
             FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress,
                     String.valueOf(this.tag));
 
-
             request = messageFactory.createRequest(
                     requestURI,
                     method,
@@ -325,6 +350,11 @@ public class SipLink {
 
             contactHeader = headerFactory.createContactHeader(contactAddress);
             request.addHeader(contactHeader);
+
+            if (this.proxySipAddress != null) {
+                RouteHeader routeHeader = headerFactory.createRouteHeader(this.addressFactory.createAddress(this.proxySipAddress));
+                request.addHeader(routeHeader);
+            }
 
             if (sdpData != null) {
                 ContentTypeHeader contentTypeHeader
@@ -351,4 +381,6 @@ public class SipLink {
     public static String uriFromAddress(String ip, String port) {
         return uriFromAddress(ip + ":" + port);
     }
+
+
 }

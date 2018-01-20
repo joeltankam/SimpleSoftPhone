@@ -8,10 +8,8 @@ import javax.sdp.MediaDescription;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 import javax.sip.*;
-import javax.sip.header.CSeqHeader;
-import javax.sip.header.FromHeader;
-import javax.sip.header.ToHeader;
-import javax.sip.header.ViaHeader;
+import javax.sip.address.Address;
+import javax.sip.header.*;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.Vector;
@@ -46,7 +44,14 @@ public class SipListenerClient implements SipListener {
 
             switch (request.getMethod()) {
                 case Request.INVITE:
-
+                    if (sipLink.divertSipAddress != null) {
+                        Address addressTo = sipLink.addressFactory.createAddress(sipLink.divertSipAddress);
+                        ToHeader toHeader = sipLink.headerFactory.createToHeader(addressTo, null);
+                        request.setHeader(toHeader);
+                        request.setRequestURI(addressTo.getURI());
+                        sipLink.sipProvider.sendRequest(request);
+                        break;
+                    }
                     sipLink.remoteSipAddress = viaHeader.getMAddr();
 
                     SessionDescription sessionDescription = sipLink.getSDPData(request);
@@ -106,6 +111,9 @@ public class SipListenerClient implements SipListener {
             if (cseq.getMethod().equals(Request.INVITE)) {
 
                 if (response.getStatusCode() == Response.OK) {
+                    ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+                    sipLink.remoteSipAddress = toHeader.getAddress().getURI().toString();
+
                     byte[] rawContent = response.getRawContent();
                     String sdpContent = new String(rawContent, "UTF-8");
 
@@ -122,6 +130,10 @@ public class SipListenerClient implements SipListener {
 
                     request = dialog.createAck(cseq.getSeqNumber());
 
+                    if (sipLink.proxySipAddress != null) {
+                        RouteHeader routeHeader = sipLink.headerFactory.createRouteHeader(sipLink.addressFactory.createAddress(sipLink.proxySipAddress));
+                        request.addHeader(routeHeader);
+                    }
                     sipLink.contactHeader = sipLink.headerFactory.createContactHeader(sipLink.contactAddress);
                     request.addHeader(sipLink.contactHeader);
                     dialog.sendAck(request);
@@ -135,6 +147,10 @@ public class SipListenerClient implements SipListener {
                 } else if (response.getStatusCode() == Response.DECLINE) {
                     sipLink.ui.cancelCall();
                 }
+            } else if (cseq.getMethod().equals(Request.REGISTER)) {
+                ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+                sipLink.proxySipAddress = toHeader.getAddress().getURI().toString();
+                int i = 0;
             }
 
         } catch (Exception ex) {

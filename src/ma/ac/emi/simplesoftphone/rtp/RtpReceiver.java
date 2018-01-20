@@ -33,5 +33,7 @@ public class RtpReceiver {
 
     public void stop() {
         player.stop();
+        player.deallocate();
+        player.close();
     }
 }
