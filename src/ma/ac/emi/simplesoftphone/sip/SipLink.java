@@ -31,7 +31,7 @@ public class SipLink {
     String proxySipAddress;
 
     String divertSipAddress;
-    Boolean divertEverything;
+    boolean divertEverything = false;
 
     private int rtpPort;
 
@@ -240,12 +240,39 @@ public class SipLink {
         }
     }
 
-    public void register(String proxyAddress) {
+    public void callByNumber(String number) {
+        try {
+            String sdpData = createSDPData(rtpPort);
+            Request request = createRequest(Request.INVITE, "sip:0.0.0.0:0", sdpData);
+            ToHeader toHeader = (ToHeader) request.getHeader(ToHeader.NAME);
+            Address address = addressFactory.createAddress("sip:0.0.0.0:0");
+            address = addressFactory.createAddress(number, address.getURI());
+            toHeader.setAddress(address);
+
+            ClientTransaction inviteTid = sipProvider.getNewClientTransaction(request);
+            inviteTid.sendRequest();
+
+            dialog = inviteTid.getDialog();
+            ui.addSentMessage(request.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void register(String proxyAddress, String number) {
         try {
             remoteSipAddress = proxyAddress;
 
             String sdpData = createSDPData(rtpPort);
             Request request = createRequest(Request.REGISTER, proxyAddress, sdpData);
+
+            if (!number.equals("")) {
+                FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
+                Address address = fromHeader.getAddress();
+                address.setDisplayName(number);
+                fromHeader.setAddress(address);
+                request.setHeader(fromHeader);
+            }
 
             sipProvider.sendRequest(request);
 
@@ -264,7 +291,6 @@ public class SipLink {
         divertSipAddress = null;
     }
 
-
     public void cancelCall() {
         try {
             Request request = createRequest(Request.CANCEL, remoteSipAddress);
@@ -282,7 +308,12 @@ public class SipLink {
         try {
             Request request = createRequest(Request.BYE, remoteSipAddress, null, dialog.getCallId());
             ClientTransaction endTid = this.sipProvider.getNewClientTransaction(request);
-            dialog.sendRequest(endTid);
+            if (proxySipAddress.equals(""))
+                dialog.sendRequest(endTid);
+            else {
+                dialog.sendRequest(endTid);
+                System.out.println("request = " + request);
+            }
 
             stopRtp();
             ui.addSentMessage(request.toString());
@@ -324,11 +355,13 @@ public class SipLink {
         return createRequest(method, address, sdpData, null);
     }
 
-    private Request createRequest(String method, String address, String sdpData, CallIdHeader callIdHeader) {
+    private Request createRequest(String method, String address, String sdpData, CallIdHeader existingCallIdHeader) {
         Request request = null;
 
         try {
             Address addressTo = this.addressFactory.createAddress(address);
+
+            CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
             ToHeader toHeader = headerFactory.createToHeader(addressTo, null);
             javax.sip.address.URI requestURI = addressTo.getURI();
@@ -342,9 +375,6 @@ public class SipLink {
                     null);
 
             viaHeaders.add(viaHeader);
-
-            if (callIdHeader == null)
-                callIdHeader = sipProvider.getNewCallId();
 
             CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, method);
 
@@ -367,6 +397,9 @@ public class SipLink {
             contactHeader = headerFactory.createContactHeader(contactAddress);
             request.addHeader(contactHeader);
 
+            if (existingCallIdHeader != null) {
+                request.setHeader(existingCallIdHeader);
+            }
             if (this.proxySipAddress != null) {
                 RouteHeader routeHeader = headerFactory.createRouteHeader(this.addressFactory.createAddress(this.proxySipAddress));
                 request.addHeader(routeHeader);
@@ -396,5 +429,9 @@ public class SipLink {
 
     public static String uriFromAddress(String ip, String port) {
         return uriFromAddress(ip + ":" + port);
+    }
+
+    public boolean doDivert() {
+        return divertEverything || ui.isCalling();
     }
 }

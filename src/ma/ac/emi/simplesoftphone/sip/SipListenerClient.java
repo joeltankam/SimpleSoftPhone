@@ -36,7 +36,7 @@ public class SipListenerClient implements SipListener {
                 transaction = sipLink.sipProvider.getNewServerTransaction(request);
             }
 
-            if (!(sipLink.divertEverything || sipLink.ui.isCalling()))
+            if (!sipLink.doDivert())
                 sipLink.transaction = transaction;
 
             ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
@@ -46,7 +46,7 @@ public class SipListenerClient implements SipListener {
             switch (request.getMethod()) {
                 case Request.INVITE:
                     if (sipLink.divertSipAddress != null) {
-                        if (sipLink.divertEverything || sipLink.ui.isCalling()) {
+                        if (sipLink.doDivert()) {
                             sipLink.divert(request);
                             break;
                         }
@@ -70,8 +70,9 @@ public class SipListenerClient implements SipListener {
 
                     transaction.sendResponse(response);
 
+                    String callingAddress = fromHeader.getAddress().getURI().toString();
                     sipLink.ui.addSentMessage(response.toString());
-                    sipLink.ui.incomingCall(fromHeader.toString());
+                    sipLink.ui.incomingCall("De : " + callingAddress);
                     break;
                 case Request.CANCEL:
                 case Request.BYE:
@@ -147,9 +148,12 @@ public class SipListenerClient implements SipListener {
                     sipLink.ui.cancelCall();
                 }
             } else if (cseq.getMethod().equals(Request.REGISTER)) {
-                ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-                sipLink.proxySipAddress = toHeader.getAddress().getURI().toString();
-                int i = 0;
+                if (response.getStatusCode() == Response.OK) {
+                    ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+                    sipLink.proxySipAddress = toHeader.getAddress().getURI().toString();
+                } else {
+                    sipLink.ui.registrationFailed();
+                }
             }
 
         } catch (Exception ex) {

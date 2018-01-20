@@ -6,6 +6,7 @@ import javax.sip.*;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.FromHeader;
 import javax.sip.header.HeaderFactory;
 import javax.sip.header.ToHeader;
 import javax.sip.message.MessageFactory;
@@ -13,6 +14,8 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import javax.swing.*;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -34,6 +37,7 @@ public class SipListenerServer implements SipListener {
     private Address contactAddress;
     private ContactHeader contactHeader;
 
+    private Map<String, Address> registrar = new HashMap<>();
 
     private SipServer ui;
 
@@ -67,11 +71,14 @@ public class SipListenerServer implements SipListener {
     }
 
     public void forward(Request request) {
-        Request newRequest = (Request) request.clone();
-
+        ToHeader toHeader = (ToHeader) request.getHeader(ToHeader.NAME);
+        String number = toHeader.getAddress().getDisplayName();
+        if (number != null && !number.equals("")) {
+            toHeader.setAddress(registrar.get(number));
+            request.setHeader(toHeader);
+        }
         try {
-            sipProvider.sendRequest(newRequest);
-            System.out.println("newRequest = " + newRequest);
+            sipProvider.sendRequest(request);
         } catch (SipException e) {
             e.printStackTrace();
         }
@@ -104,7 +111,17 @@ public class SipListenerServer implements SipListener {
                 Response response;
                 if (request.getMethod().equals("REGISTER")) {
                     // If the request is a REGISTER.
+                    FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
+                    Address address = fromHeader.getAddress();
+                    String displayName = address.getDisplayName();
                     response = this.messageFactory.createResponse(Response.OK, request);
+                    if (displayName != null && !displayName.equals("")) {
+                        if (!registrar.containsKey(displayName))
+                            registrar.put(displayName, address);
+                        else
+                            response = this.messageFactory.createResponse(Response.DECLINE, request);
+                    }
+
                     ((ToHeader) response.getHeader("To")).setTag(String.valueOf(this.tag));
                     response.addHeader(this.contactHeader);
                     transaction.sendResponse(response);

@@ -590,6 +590,10 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
         callingContentLabel.setText("Appel en cours...");
     }
 
+    public void registrationFailed() {
+
+    }
+
     public void takeCall() {
         stopSound();
         link.takeCall();

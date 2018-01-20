@@ -14,4 +14,6 @@ public interface SipCall {
     void addReceivedMessage(String receivedMessage);
 
     void addSentMessage(String sentMessage);
+
+    void registrationFailed();
 }

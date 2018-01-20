@@ -23,7 +23,7 @@ public class RtpTransmitter {
     private RtpTransmitter(String locator) {
         MediaLocator mediaLocator = new MediaLocator("javasound://0");
 
-        DataSource source = null;
+        source = null;
         try {
             source = Manager.createDataSource(mediaLocator);
         } catch (IOException | NoDataSourceException e) {
