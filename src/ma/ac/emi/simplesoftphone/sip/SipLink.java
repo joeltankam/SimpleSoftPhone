@@ -111,7 +111,7 @@ public class SipLink {
         System.out.println("sip:" + this.ip + ":" + this.sipPort + "\n");
     }
 
-    public String createSDPData(int localBasePort) {
+    private String createSDPData(int localBasePort) {
         try {
             SdpFactory sdpFactory = SdpFactory.getInstance();
             SessionDescription sessDescr = sdpFactory.createSessionDescription();
@@ -232,6 +232,7 @@ public class SipLink {
             dialog = inviteTid.getDialog();
             ui.addSentMessage(request.toString());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -274,15 +275,15 @@ public class SipLink {
             rtpLink.stop();
     }
 
-    public Request createRequest(String method, String address) {
+    private Request createRequest(String method, String address) {
         return createRequest(method, address, null, null);
     }
 
-    public Request createRequest(String method, String address, String sdpData) {
+    private Request createRequest(String method, String address, String sdpData) {
         return createRequest(method, address, sdpData, null);
     }
 
-    public Request createRequest(String method, String address, String sdpData, CallIdHeader callIdHeader) {
+    private Request createRequest(String method, String address, String sdpData, CallIdHeader callIdHeader) {
         Request request = null;
 
         try {
@@ -340,7 +341,7 @@ public class SipLink {
         return request;
     }
 
-    public static String uriFromAddress(String address) {
+    private static String uriFromAddress(String address) {
         return "sip:" + address;
     }
 

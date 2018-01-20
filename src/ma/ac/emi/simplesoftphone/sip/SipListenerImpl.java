@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 
 public class SipListenerImpl implements SipListener {
 
-    SipLink sipLink;
+    private SipLink sipLink;
 
-    public SipListenerImpl(SipLink sipLink) {
+    SipListenerImpl(SipLink sipLink) {
         this.sipLink = sipLink;
     }
 
@@ -44,41 +44,46 @@ public class SipListenerImpl implements SipListener {
 
             Response response;
 
-            if (request.getMethod().equals(Request.INVITE)) {
+            switch (request.getMethod()) {
+                case Request.INVITE:
 
-                sipLink.remoteSipAddress = viaHeader.getMAddr();
+                    sipLink.remoteSipAddress = viaHeader.getMAddr();
 
-                SessionDescription sessionDescription = sipLink.getSDPData(request);
+                    SessionDescription sessionDescription = sipLink.getSDPData(request);
 
-                Vector mediaDescs = sessionDescription.getMediaDescriptions(false);
+                    Vector mediaDescs = sessionDescription.getMediaDescriptions(false);
 
-                MediaDescription am = (MediaDescription) mediaDescs.get(0);
+                    MediaDescription am = (MediaDescription) mediaDescs.get(0);
 
-                sipLink.remoteRtpPort = am.getMedia().getMediaPort();
+                    sipLink.remoteRtpPort = am.getMedia().getMediaPort();
 
-                FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
+                    FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
 
-                response = sipLink.messageFactory.createResponse(Response.RINGING, request);
+                    response = sipLink.messageFactory.createResponse(Response.RINGING, request);
 
-                ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
-                response.addHeader(sipLink.contactHeader);
+                    ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
+                    response.addHeader(sipLink.contactHeader);
 
-                transaction.sendResponse(response);
+                    transaction.sendResponse(response);
 
-                sipLink.ui.addSentMessage(response.toString());
-                sipLink.ui.incomingCall(fromHeader.toString());
-            } else if (request.getMethod().equals(Request.CANCEL) || request.getMethod().equals(Request.BYE)) {
-                response = sipLink.messageFactory.createResponse(Response.OK, request);
-                ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
-                response.addHeader(sipLink.contactHeader);
-                transaction.sendResponse(response);
+                    sipLink.ui.addSentMessage(response.toString());
+                    sipLink.ui.incomingCall(fromHeader.toString());
+                    break;
+                case Request.CANCEL:
+                case Request.BYE:
+                    response = sipLink.messageFactory.createResponse(Response.OK, request);
+                    ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
+                    response.addHeader(sipLink.contactHeader);
+                    transaction.sendResponse(response);
 
-                sipLink.ui.addSentMessage(response.toString());
-                sipLink.ui.cancelCall();
-                if (request.getMethod().equals(Request.BYE))
-                    sipLink.stopRtp();
-            } else if (request.getMethod().equals("ACK")) {
+                    sipLink.ui.addSentMessage(response.toString());
+                    sipLink.ui.cancelCall();
+                    if (request.getMethod().equals(Request.BYE))
+                        sipLink.stopRtp();
+                    break;
+                case "ACK":
 
+                    break;
             }
         } catch (Exception ex) {
             Logger.getLogger(SipBasicPhone.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,28 +8,15 @@ import java.io.IOException;
  */
 public class RtpReceiver {
     /**
-     * Uri à partir de laquelle on lit le stream audio
-     */
-    private String locator;
-    /**
-     * Medialocator correspondant à l'uri
-     */
-    private MediaLocator mediaLocator;
-    /**
      * Lecteur audio
      */
     private Player player;
 
     private RtpReceiver(String locator) {
-        this.locator = locator;
-        this.mediaLocator = new MediaLocator(locator);
+        MediaLocator mediaLocator = new MediaLocator(locator);
         try {
             player = Manager.createRealizedPlayer(mediaLocator);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoPlayerException e) {
-            e.printStackTrace();
-        } catch (CannotRealizeException e) {
+        } catch (IOException | NoPlayerException | CannotRealizeException e) {
             e.printStackTrace();
         }
         player.start();

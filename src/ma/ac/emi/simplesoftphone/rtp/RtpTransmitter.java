@@ -10,19 +10,8 @@ import java.io.IOException;
  * Permet de transmettre un stream audio pour lire un stream audio à partir d'une uri
  */
 public class RtpTransmitter {
-    /**
-     * Uri à laquelle on transmet le stream audio
-     */
-    private String locator;
-
-    MediaLocator mediaLocator;
-
-    DataSource source;
-
-    Processor mediaProcessor;
-
-    MediaLocator outputMediaLocator;
-    DataSink dataSink;
+    private Processor mediaProcessor;
+    private DataSink dataSink;
 
     /**
      * Formats de transmission
@@ -31,30 +20,23 @@ public class RtpTransmitter {
     private static final ContentDescriptor CONTENT_DESCRIPTOR = new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
     private RtpTransmitter(String locator) {
-        this.locator = locator;
-        mediaLocator = new MediaLocator("javasound://0");
+        MediaLocator mediaLocator = new MediaLocator("javasound://0");
 
-        source = null;
+        DataSource source = null;
         try {
             source = Manager.createDataSource(mediaLocator);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoDataSourceException e) {
+        } catch (IOException | NoDataSourceException e) {
             e.printStackTrace();
         }
 
         mediaProcessor = null;
         try {
             mediaProcessor = Manager.createRealizedProcessor(new ProcessorModel(source, FORMATS, CONTENT_DESCRIPTOR));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoProcessorException e) {
-            e.printStackTrace();
-        } catch (CannotRealizeException e) {
+        } catch (IOException | CannotRealizeException | NoProcessorException e) {
             e.printStackTrace();
         }
 
-        outputMediaLocator = new MediaLocator(locator);
+        MediaLocator outputMediaLocator = new MediaLocator(locator);
         dataSink = null;
         try {
             dataSink = Manager.createDataSink(mediaProcessor.getDataOutput(), outputMediaLocator);

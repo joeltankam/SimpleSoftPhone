@@ -1,19 +1,15 @@
 package ma.ac.emi.simplesoftphone.rtp;
 
 public class RtpLink {
-    RtpTransmitter transmitter;
-    RtpReceiver receiver;
+    private RtpTransmitter transmitter;
+    private RtpReceiver receiver;
 
-    private RtpLink(String fromLocator, String toLocator) {
-        new RtpLink(RtpTransmitter.to(toLocator), RtpReceiver.from(fromLocator));
-    }
-
-    public RtpLink(RtpTransmitter transmitter, RtpReceiver receiver) {
+    private RtpLink(RtpTransmitter transmitter, RtpReceiver receiver) {
         this.transmitter = transmitter;
         this.receiver = receiver;
     }
 
-    public static String uriFromAddress(String address){
+    private static String uriFromAddress(String address) {
         return "rtp://" + address;
     }
 
