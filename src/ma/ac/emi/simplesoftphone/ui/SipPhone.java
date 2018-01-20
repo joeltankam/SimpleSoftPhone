@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 /**
  * @author Joel
  */
-public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
+public class SipPhone extends JFrame implements SipCall {
 
     private SipLink link;
     private String calleeAddress;
@@ -34,7 +34,7 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
     /**
      * Creates new form SipBasicPhone
      */
-    public SipBasicPhone() {
+    public SipPhone() {
         initComponents();
         String ip = "0.0.0.0"; // Adresse Ip locale
         try {
@@ -86,8 +86,6 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
         callActionsPanel = new javax.swing.JPanel();
         incomingCallPanel = new javax.swing.JPanel();
         callingPanel = new javax.swing.JPanel();
@@ -98,6 +96,12 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
         takeCallButton = new javax.swing.JButton();
         incomingCallContentLabel = new javax.swing.JLabel();
         callingContentLabel = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        callActionsPanel = new javax.swing.JPanel();
+        callPanel = new javax.swing.JPanel();
+        callButton = new javax.swing.JButton();
+        contentLabel = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -108,6 +112,27 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
         jPanel9 = new javax.swing.JPanel();
         destRtpAddressIpTextField = new javax.swing.JTextField();
         destRtpAddressPortTextField = new javax.swing.JTextField();
+        jPanel25 = new javax.swing.JPanel();
+        jPanel26 = new javax.swing.JPanel();
+        serviceRegisterButton = new javax.swing.JButton();
+        serviceCancelButton = new javax.swing.JButton();
+        jPanel27 = new javax.swing.JPanel();
+        jPanel28 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        jPanel29 = new javax.swing.JPanel();
+        divertSipAddressIpTextField = new javax.swing.JTextField();
+        divertSipAddressPortTextField = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jPanel30 = new javax.swing.JPanel();
+        divertConditionComboBox = new javax.swing.JComboBox<>();
+        jPanel20 = new javax.swing.JPanel();
+        jPanel21 = new javax.swing.JPanel();
+        proxyRegisterButton = new javax.swing.JButton();
+        jPanel22 = new javax.swing.JPanel();
+        jPanel23 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jPanel24 = new javax.swing.JPanel();
+        numberTextField = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
@@ -122,6 +147,10 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
         jPanel15 = new javax.swing.JPanel();
         localRtpAddressIpTextField = new javax.swing.JTextField();
         localRtpAddressPortTextField = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel19 = new javax.swing.JPanel();
+        proxySipAddressIpTextField = new javax.swing.JTextField();
+        proxySipAddressPortTextField = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
@@ -323,6 +352,203 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
 
         jTabbedPane1.addTab("Appel", jPanel1);
 
+        jPanel25.setLayout(new java.awt.BorderLayout());
+
+        serviceRegisterButton.setText("Enregistrer");
+
+        serviceCancelButton.setText("Annuler");
+        serviceCancelButton.setEnabled(false);
+
+        javax.swing.GroupLayout jPanel26Layout = new javax.swing.GroupLayout(jPanel26);
+        jPanel26.setLayout(jPanel26Layout);
+        jPanel26Layout.setHorizontalGroup(
+                jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel26Layout.createSequentialGroup()
+                                .addContainerGap(218, Short.MAX_VALUE)
+                                .addComponent(serviceCancelButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(serviceRegisterButton)
+                                .addContainerGap())
+        );
+        jPanel26Layout.setVerticalGroup(
+                jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel26Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(serviceRegisterButton)
+                                        .addComponent(serviceCancelButton))
+                                .addContainerGap())
+        );
+
+        jPanel25.add(jPanel26, java.awt.BorderLayout.PAGE_END);
+
+        jPanel28.setLayout(new java.awt.GridLayout(2, 2));
+
+        jLabel9.setText("Adresse SIP déviation :");
+        jPanel28.add(jLabel9);
+
+        divertSipAddressIpTextField.setToolTipText("IP");
+        divertSipAddressIpTextField.setEnabled(false);
+        divertSipAddressPortTextField.setText("6060");
+        divertSipAddressPortTextField.setToolTipText("Port");
+
+        javax.swing.GroupLayout jPanel29Layout = new javax.swing.GroupLayout(jPanel29);
+        jPanel29.setLayout(jPanel29Layout);
+        jPanel29Layout.setHorizontalGroup(
+                jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel29Layout.createSequentialGroup()
+                                .addComponent(divertSipAddressIpTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(divertSipAddressPortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel29Layout.setVerticalGroup(
+                jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel29Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel29Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(divertSipAddressIpTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(divertSipAddressPortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap())
+        );
+
+        jPanel28.add(jPanel29);
+
+        jLabel10.setText("Condition : ");
+        jPanel28.add(jLabel10);
+
+        divertConditionComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Sans condition", "Si occupé", "Si pas de réponse"}));
+
+        javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
+        jPanel30.setLayout(jPanel30Layout);
+        jPanel30Layout.setHorizontalGroup(
+                jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel30Layout.createSequentialGroup()
+                                .addComponent(divertConditionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 61, Short.MAX_VALUE))
+        );
+        jPanel30Layout.setVerticalGroup(
+                jPanel30Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel30Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(divertConditionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+        );
+
+        jPanel28.add(jPanel30);
+
+        javax.swing.GroupLayout jPanel27Layout = new javax.swing.GroupLayout(jPanel27);
+        jPanel27.setLayout(jPanel27Layout);
+        jPanel27Layout.setHorizontalGroup(
+                jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel27Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jPanel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
+        jPanel27Layout.setVerticalGroup(
+                jPanel27Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel27Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jPanel28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(148, Short.MAX_VALUE))
+        );
+
+        jPanel25.add(jPanel27, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Déviation d'appel", jPanel25);
+
+        jPanel20.setLayout(new java.awt.BorderLayout());
+
+        proxyRegisterButton.setText("Enregistrer");
+
+        javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
+        jPanel21.setLayout(jPanel21Layout);
+        jPanel21Layout.setHorizontalGroup(
+                jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel21Layout.createSequentialGroup()
+                                .addContainerGap(298, Short.MAX_VALUE)
+                                .addComponent(proxyRegisterButton)
+                                .addContainerGap())
+        );
+        jPanel21Layout.setVerticalGroup(
+                jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel21Layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(proxyRegisterButton)
+                                .addContainerGap())
+        );
+
+        jPanel20.add(jPanel21, java.awt.BorderLayout.PAGE_END);
+
+        jPanel23.setLayout(new java.awt.GridLayout(2, 2));
+
+        jLabel7.setText("Adresse SIP Proxy Server  :");
+        jPanel23.add(jLabel7);
+
+        proxySipAddressPortTextField.setText("6060");
+        proxySipAddressPortTextField.setToolTipText("Port");
+
+        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
+        jPanel19.setLayout(jPanel19Layout);
+        jPanel19Layout.setHorizontalGroup(
+                jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel19Layout.createSequentialGroup()
+                                .addComponent(proxySipAddressIpTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(proxySipAddressPortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel19Layout.setVerticalGroup(
+                jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel19Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(proxySipAddressIpTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(proxySipAddressPortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel23.add(jPanel19);
+
+        jLabel8.setText("Numéro :");
+        jPanel23.add(jLabel8);
+
+        javax.swing.GroupLayout jPanel24Layout = new javax.swing.GroupLayout(jPanel24);
+        jPanel24.setLayout(jPanel24Layout);
+        jPanel24Layout.setHorizontalGroup(
+                jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(numberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+        );
+        jPanel24Layout.setVerticalGroup(
+                jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel24Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(numberTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(7, Short.MAX_VALUE))
+        );
+
+        jPanel23.add(jPanel24);
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+                jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel22Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jPanel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
+        jPanel22Layout.setVerticalGroup(
+                jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel22Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(148, Short.MAX_VALUE))
+        );
+
+        jPanel20.add(jPanel22, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Enregistrement", jPanel20);
+
         jPanel10.setLayout(new java.awt.BorderLayout());
 
         configureButton.setText("Configurer");
@@ -426,7 +652,7 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
                         .addGroup(jPanel12Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(152, Short.MAX_VALUE))
+                                .addContainerGap(116, Short.MAX_VALUE))
         );
 
         jPanel10.add(jPanel12, java.awt.BorderLayout.CENTER);
@@ -513,7 +739,7 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
 
         jTabbedPane1.addTab("Log", jPanel3);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.PAGE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -655,20 +881,20 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
             UIManager.setLookAndFeel(
                     UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SipBasicPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SipPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SipBasicPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SipPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SipBasicPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SipBasicPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SipPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(SipPhone.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SipBasicPhone().setVisible(true);
+                new SipPhone().setVisible(true);
             }
         });
     }
@@ -705,12 +931,21 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
     private javax.swing.JTextField destRtpAddressPortTextField;
     private javax.swing.JTextField destSipAddressIpTextField;
     private javax.swing.JTextField destSipAddressPortTextField;
+    private javax.swing.JLabel contentLabel;
+    private javax.swing.JComboBox<String> divertConditionComboBox;
+    private javax.swing.JTextField divertSipAddressIpTextField;
+    private javax.swing.JTextField divertSipAddressPortTextField;
+    private javax.swing.JButton serviceCancelButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -721,8 +956,20 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel29;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel callActionsPanel;
     private javax.swing.JPanel callPanel;
     private javax.swing.JPanel callingPanel;
@@ -738,7 +985,12 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
     private javax.swing.JTextField localRtpAddressPortTextField;
     private javax.swing.JTextField localSipAddressIpTextField;
     private javax.swing.JTextField localSipAddressPortTextField;
+    private javax.swing.JTextField numberTextField;
+    private javax.swing.JButton proxyRegisterButton;
+    private javax.swing.JTextField proxySipAddressIpTextField;
+    private javax.swing.JTextField proxySipAddressPortTextField;
     private javax.swing.JTextArea receivedMessagesTextArea;
     private javax.swing.JTextArea sentMessagesTextArea;
+    private javax.swing.JButton serviceRegisterButton;
     // End of variables declaration//GEN-END:variables
 }

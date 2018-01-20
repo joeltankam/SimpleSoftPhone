@@ -1,7 +1,7 @@
 package ma.ac.emi.simplesoftphone.sip;
 
 import ma.ac.emi.simplesoftphone.rtp.RtpLink;
-import ma.ac.emi.simplesoftphone.ui.SipBasicPhone;
+import ma.ac.emi.simplesoftphone.ui.SipCall;
 
 import javax.sdp.*;
 import javax.sip.*;
@@ -42,9 +42,9 @@ public class SipLink {
 
     private RtpLink rtpLink;
 
-    SipBasicPhone ui;
+    SipCall ui;
 
-    public SipLink(String ip, int sipPort, int rtpPort, SipBasicPhone ui) throws InvalidArgumentException {
+    public SipLink(String ip, int sipPort, int rtpPort, SipCall ui) throws InvalidArgumentException {
         this.ip = ip;
         this.sipPort = sipPort;
         this.rtpPort = rtpPort;
