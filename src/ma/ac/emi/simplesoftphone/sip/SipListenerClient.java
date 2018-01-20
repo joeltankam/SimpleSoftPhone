@@ -8,7 +8,6 @@ import javax.sdp.MediaDescription;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 import javax.sip.*;
-import javax.sip.address.Address;
 import javax.sip.header.*;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
@@ -36,7 +35,9 @@ public class SipListenerClient implements SipListener {
             if (transaction == null) {
                 transaction = sipLink.sipProvider.getNewServerTransaction(request);
             }
-            sipLink.transaction = transaction;
+
+            if (!(sipLink.divertEverything || sipLink.ui.isCalling()))
+                sipLink.transaction = transaction;
 
             ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
 
@@ -45,12 +46,10 @@ public class SipListenerClient implements SipListener {
             switch (request.getMethod()) {
                 case Request.INVITE:
                     if (sipLink.divertSipAddress != null) {
-                        Address addressTo = sipLink.addressFactory.createAddress(sipLink.divertSipAddress);
-                        ToHeader toHeader = sipLink.headerFactory.createToHeader(addressTo, null);
-                        request.setHeader(toHeader);
-                        request.setRequestURI(addressTo.getURI());
-                        sipLink.sipProvider.sendRequest(request);
-                        break;
+                        if (sipLink.divertEverything || sipLink.ui.isCalling()) {
+                            sipLink.divert(request);
+                            break;
+                        }
                     }
                     sipLink.remoteSipAddress = viaHeader.getMAddr();
 

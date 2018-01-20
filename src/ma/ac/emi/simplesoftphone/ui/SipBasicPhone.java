@@ -550,6 +550,10 @@ public class SipBasicPhone extends javax.swing.JFrame implements SipCall {
 
     }//GEN-LAST:event_call
 
+    public Boolean isCalling() {
+        return calling;
+    }
+
     public void ringing() {
         callingContentLabel.setText("Sonnerie...");
         playRinging();

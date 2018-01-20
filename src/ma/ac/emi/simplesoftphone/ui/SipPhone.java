@@ -403,8 +403,8 @@ public class SipPhone extends JFrame implements SipCall {
         jLabel10.setText("Condition : ");
         jPanel28.add(jLabel10);
 
-        divertConditionComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Sans condition", "Si occupé", "Si pas de réponse"}));
-        divertConditionComboBox.setEnabled(false);
+        divertConditionComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Sans condition", "Si occupé"}));
+        //divertConditionComboBox.setEnabled(false);
 
         javax.swing.GroupLayout jPanel30Layout = new javax.swing.GroupLayout(jPanel30);
         jPanel30.setLayout(jPanel30Layout);
@@ -460,6 +460,7 @@ public class SipPhone extends JFrame implements SipCall {
                                 .addComponent(proxyRegisterButton)
                                 .addContainerGap())
         );
+
         jPanel21Layout.setVerticalGroup(
                 jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel21Layout.createSequentialGroup()
@@ -780,13 +781,17 @@ public class SipPhone extends JFrame implements SipCall {
                 divertSipAddressIpTextField.getText(),
                 Integer.parseInt(divertSipAddressPortTextField.getText())
         );
-        link.registerService(address);
+        link.registerService(address, divertConditionComboBox.getSelectedIndex() == 0);
         disableServiceRegistration();
     }
 
     private void cancelService() {
         link.cancelService();
         enableServiceRegistration();
+    }
+
+    public Boolean isCalling() {
+        return calling;
     }
 
     public void ringing() {
@@ -919,7 +924,7 @@ public class SipPhone extends JFrame implements SipCall {
     }
 
     private void enableServiceRegistration() {
-        //divertConditionComboBox.setEnabled(true);
+        divertConditionComboBox.setEnabled(true);
         divertSipAddressIpTextField.setEnabled(true);
         divertSipAddressPortTextField.setEnabled(true);
         registerServiceButton.setEnabled(true);

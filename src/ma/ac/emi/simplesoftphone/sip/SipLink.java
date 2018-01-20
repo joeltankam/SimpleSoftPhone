@@ -29,7 +29,9 @@ public class SipLink {
 
     String remoteSipAddress;
     String proxySipAddress;
+
     String divertSipAddress;
+    Boolean divertEverything;
 
     private int rtpPort;
 
@@ -253,8 +255,9 @@ public class SipLink {
         }
     }
 
-    public void registerService(String divertAddress) {
+    public void registerService(String divertAddress, Boolean condition) {
         divertSipAddress = divertAddress;
+        divertEverything = condition;
     }
 
     public void cancelService() {
@@ -284,6 +287,19 @@ public class SipLink {
             stopRtp();
             ui.addSentMessage(request.toString());
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void divert(Request request) {
+        Address addressTo = null;
+        try {
+            addressTo = addressFactory.createAddress(divertSipAddress);
+            ToHeader toHeader = headerFactory.createToHeader(addressTo, null);
+            request.setHeader(toHeader);
+            request.setRequestURI(addressTo.getURI());
+            sipProvider.sendRequest(request);
+        } catch (ParseException | SipException e) {
             e.printStackTrace();
         }
     }
@@ -381,6 +397,4 @@ public class SipLink {
     public static String uriFromAddress(String ip, String port) {
         return uriFromAddress(ip + ":" + port);
     }
-
-
 }

@@ -1,6 +1,8 @@
 package ma.ac.emi.simplesoftphone.ui;
 
 public interface SipCall {
+    Boolean isCalling();
+
     void ringing();
 
     void incomingCall(String from);
