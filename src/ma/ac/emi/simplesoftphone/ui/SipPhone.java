@@ -485,7 +485,7 @@ public class SipPhone extends JFrame implements SipCall {
         jLabel7.setText("Adresse SIP Proxy Server  :");
         jPanel23.add(jLabel7);
 
-        proxySipAddressPortTextField.setText("6060");
+        proxySipAddressPortTextField.setText("5060");
         proxySipAddressPortTextField.setToolTipText("Port");
 
         javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);

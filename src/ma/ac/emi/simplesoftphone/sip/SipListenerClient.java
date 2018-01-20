@@ -18,11 +18,11 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SipListenerImpl implements SipListener {
+public class SipListenerClient implements SipListener {
 
     private SipLink sipLink;
 
-    SipListenerImpl(SipLink sipLink) {
+    SipListenerClient(SipLink sipLink) {
         this.sipLink = sipLink;
     }
 

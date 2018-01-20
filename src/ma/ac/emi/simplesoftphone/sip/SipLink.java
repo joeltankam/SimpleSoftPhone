@@ -102,7 +102,7 @@ public class SipLink {
         }
         this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
 
-        SipListenerImpl sipListener = new SipListenerImpl(this);
+        SipListenerClient sipListener = new SipListenerClient(this);
         try {
             this.sipProvider.addSipListener(sipListener);
         } catch (TooManyListenersException e) {
@@ -166,7 +166,6 @@ public class SipLink {
 
         return sessionDescription;
     }
-
 
     public void takeCall() {
         try {
