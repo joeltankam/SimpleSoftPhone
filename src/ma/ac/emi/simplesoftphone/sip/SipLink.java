@@ -169,8 +169,17 @@ public class SipLink {
     public void takeCall() {
         try {
             Request request = transaction.getRequest();
+            byte[] rawContent = request.getRawContent();
+            String sdpContent = new String(rawContent, "UTF-8");
+            SdpFactory sdpFactory = SdpFactory.getInstance();
+            SessionDescription sessionDescription = sdpFactory.createSessionDescription(sdpContent);
+
+            Connection c = sessionDescription.getConnection();
+
+            FromHeader fromHeader = (FromHeader) request.getHeader(FromHeader.NAME);
+
             Response response;
-            response = messageFactory.createResponse(200, request);
+            response = messageFactory.createResponse(Response.OK, request);
 
             ((ToHeader) response.getHeader("To")).setTag(String.valueOf(tag));
             response.addHeader(contactHeader);
@@ -184,8 +193,9 @@ public class SipLink {
             transaction.sendResponse(response);
 
             ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
-            String remoteRtpAddress = RtpLink.audioUriFromAddress(viaHeader.getHost(), remoteRtpPort);
+            String remoteRtpAddress = RtpLink.audioUriFromAddress(c.getAddress(), remoteRtpPort);
 
+            remoteSipAddress = fromHeader.getAddress().getURI().toString();
             ui.addSentMessage(response.toString());
             startRtp(remoteRtpAddress);
         } catch (Exception e) {
@@ -393,8 +403,7 @@ public class SipLink {
             stopRtp();
             ui.addSentMessage(request.toString());
         } catch (Exception e) {
-            //Afficher l’erreur en cas de problème.
-            System.out.println("Failed: " + e.getMessage() + "\n");
+            e.printStackTrace();
         }
     }
 

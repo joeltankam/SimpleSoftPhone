@@ -28,6 +28,8 @@ public class SipListenerImpl implements SipListener {
         Request request = requestEvent.getRequest();
         sipLink.ui.addReceivedMessage(request.toString());
 
+        sipLink.dialog = requestEvent.getDialog();
+
         try {
             sipLink.transaction = requestEvent.getServerTransaction();
             if (null == sipLink.transaction) {
@@ -97,7 +99,6 @@ public class SipListenerImpl implements SipListener {
             ViaHeader viaHeader = (ViaHeader) response.getHeader(ViaHeader.NAME);
 
             if (cseq.getMethod().equals(Request.INVITE)) {
-
 
                 if (response.getStatusCode() == Response.OK) {
                     byte[] rawContent = response.getRawContent();
