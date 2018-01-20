@@ -66,11 +66,6 @@ public class RtpTransmitter {
 
         try {
             dataSink.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             dataSink.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,6 +87,7 @@ public class RtpTransmitter {
     public void stop() {
         try {
             dataSink.stop();
+            dataSink.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

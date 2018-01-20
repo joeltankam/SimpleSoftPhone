@@ -586,7 +586,7 @@ public class SipBasicPhone extends javax.swing.JFrame {
     public void answeredCall() {
         stopSound();
         calling = true;
-        callingContentLabel.setText("Appel en cours");
+        callingContentLabel.setText("Appel en cours...");
     }
 
     public void takeCall() {

@@ -8,7 +8,10 @@ import javax.sdp.MediaDescription;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
 import javax.sip.*;
-import javax.sip.header.*;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.Vector;
@@ -26,28 +29,26 @@ public class SipListenerImpl implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
+        ServerTransaction transaction = requestEvent.getServerTransaction();
+        Dialog dialog = requestEvent.getDialog();
+        sipLink.dialog = dialog;
+
         sipLink.ui.addReceivedMessage(request.toString());
-
-        sipLink.dialog = requestEvent.getDialog();
-
         try {
-            sipLink.transaction = requestEvent.getServerTransaction();
-            if (null == sipLink.transaction) {
-                sipLink.transaction = sipLink.sipProvider.getNewServerTransaction(request);
+            if (transaction == null) {
+                transaction = sipLink.sipProvider.getNewServerTransaction(request);
             }
+            sipLink.transaction = transaction;
 
             ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
+
             Response response;
 
             if (request.getMethod().equals(Request.INVITE)) {
 
                 sipLink.remoteSipAddress = viaHeader.getMAddr();
 
-                byte[] rawContent = request.getRawContent();
-                String sdpContent = new String(rawContent, "UTF-8");
-
-                SdpFactory sdpFactory = SdpFactory.getInstance();
-                SessionDescription sessionDescription = sdpFactory.createSessionDescription(sdpContent);
+                SessionDescription sessionDescription = sipLink.getSDPData(request);
 
                 Vector mediaDescs = sessionDescription.getMediaDescriptions(false);
 
@@ -62,10 +63,7 @@ public class SipListenerImpl implements SipListener {
                 ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
                 response.addHeader(sipLink.contactHeader);
 
-                ContentTypeHeader contentTypeHeader
-                        = sipLink.headerFactory.createContentTypeHeader("application", "sdp");
-
-                sipLink.transaction.sendResponse(response);
+                transaction.sendResponse(response);
 
                 sipLink.ui.addSentMessage(response.toString());
                 sipLink.ui.incomingCall(fromHeader.toString());
@@ -73,7 +71,7 @@ public class SipListenerImpl implements SipListener {
                 response = sipLink.messageFactory.createResponse(Response.OK, request);
                 ((ToHeader) response.getHeader("To")).setTag(String.valueOf(sipLink.tag));
                 response.addHeader(sipLink.contactHeader);
-                sipLink.transaction.sendResponse(response);
+                transaction.sendResponse(response);
 
                 sipLink.ui.addSentMessage(response.toString());
                 sipLink.ui.cancelCall();
@@ -90,13 +88,15 @@ public class SipListenerImpl implements SipListener {
     @Override
     public void processResponse(ResponseEvent responseEvent) {
         Response response = responseEvent.getResponse();
+        ClientTransaction transaction = responseEvent.getClientTransaction();
+        Dialog dialog = responseEvent.getDialog();
 
+        sipLink.dialog = dialog;
         sipLink.ui.addReceivedMessage(response.toString());
         Request request;
 
         try {
             CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
-            ViaHeader viaHeader = (ViaHeader) response.getHeader(ViaHeader.NAME);
 
             if (cseq.getMethod().equals(Request.INVITE)) {
 
@@ -115,11 +115,11 @@ public class SipListenerImpl implements SipListener {
 
                     sipLink.remoteRtpPort = am.getMedia().getMediaPort();
 
-                    request = sipLink.dialog.createAck(cseq.getSeqNumber());
+                    request = dialog.createAck(cseq.getSeqNumber());
 
                     sipLink.contactHeader = sipLink.headerFactory.createContactHeader(sipLink.contactAddress);
                     request.addHeader(sipLink.contactHeader);
-                    sipLink.dialog.sendAck(request);
+                    dialog.sendAck(request);
                     String remoteRtpAddress = RtpLink.audioUriFromAddress(c.getAddress(), sipLink.remoteRtpPort);
 
                     sipLink.ui.answeredCall();
