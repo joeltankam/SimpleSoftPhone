@@ -12,6 +12,7 @@ import java.io.IOException;
 public class RtpTransmitter {
     private Processor mediaProcessor;
     private DataSink dataSink;
+    private DataSource source;
 
     /**
      * Formats de transmission
@@ -67,12 +68,18 @@ public class RtpTransmitter {
     }
 
     public void stop() {
+        mediaProcessor.stop();
         try {
             dataSink.stop();
             dataSink.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mediaProcessor.stop();
+        try {
+            source.stop();
+            source.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
